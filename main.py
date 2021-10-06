@@ -48,7 +48,10 @@ class Browser():
 
     def __init__(self, PROXY):
         print(PROXY)
-        self.ua = UserAgent(use_cache_server=False)
+        try:
+            self.ua = UserAgent(fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36')
+        except Exception as e:
+            print(f"SOME USERAGENT BS: {e}")
 
         options = webdriver.ChromeOptions()
         options.headless = True
