@@ -233,7 +233,7 @@ class Browser():
             return
 
         print("checking for token")
-        count = 100000
+        count = 3000
         notoken = True
         while notoken and count > 0:
             count -= 1
