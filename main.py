@@ -65,8 +65,10 @@ class Browser():
         options.add_argument('--proxy-server=%s' % PROXY)
         try:
             options.add_argument(f"--user-agent={self.ua.random}")
+            print("random ua used")
         except:
             options.add_argument(f"--user-agent={random.choice(users_agent)}")
+            print(f"taking random ua {random.choice(users_agent)}")
         options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
         options.add_argument("--headless")
         options.add_argument("--disable-dev-shm-usage")
