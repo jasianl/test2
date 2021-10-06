@@ -6,6 +6,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 import random
 import requests
 import json
+import sys
+sys.path.append("/fake-useragent-master/fake_useragent")
 from fake_useragent import UserAgent
 
 from selenium.webdriver.common.by import By
