@@ -1,0 +1,4 @@
+discord.py==1.7.3
+selenium==3.141.0
+requests==2.26.0
+fake-useragent==0.1.11
