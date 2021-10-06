@@ -59,32 +59,35 @@ class Browser():
         except Exception as e:
             print(f"SOME USERAGENT BS: {e}")
 
-        options = webdriver.ChromeOptions()
-        options.headless = True
-        options.add_argument('--headless')
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        #options.add_argument('--proxy-server=%s' % PROXY)
         try:
-            options.add_argument(f"--user-agent={self.ua.random}")
-            print("random ua used")
-        except:
-            options.add_argument(f"--user-agent={random.choice(users_agent)}")
-            print(f"taking random ua {random.choice(users_agent)}")
-        options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        options.add_argument("--headless")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--no-sandbox")
-        
-        #options.add_argument('--headless')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--remote-debugging-port=9222')
-        options.add_argument('--proxy-server='+proxy)
-        
-        
-        # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
-        self.driver = uc.Chrome(options=options)
+            options = webdriver.ChromeOptions()
+            options.headless = True
+            options.add_argument('--headless')
+            options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            options.add_experimental_option('useAutomationExtension', False)
+            options.add_argument("--disable-blink-features=AutomationControlled")
+            #options.add_argument('--proxy-server=%s' % PROXY)
+            try:
+                options.add_argument(f"--user-agent={self.ua.random}")
+                print("random ua used")
+            except:
+                options.add_argument(f"--user-agent={random.choice(users_agent)}")
+                print(f"taking random ua {random.choice(users_agent)}")
+            options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+            options.add_argument("--headless")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--no-sandbox")
+
+            #options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--remote-debugging-port=9222')
+            options.add_argument('--proxy-server='+proxy)
+
+
+            # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+            self.driver = uc.Chrome(options=options)
+        except Exception as e:
+            print(e)
 
         # self.driver = webdriver.Chrome(options=options)
 
