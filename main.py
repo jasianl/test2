@@ -13,6 +13,8 @@ from fake_useragent import UserAgent
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+import undetected_chromedriver as uc
 import os
 
 from discord import Webhook, RequestsWebhookAdapter
@@ -59,6 +61,7 @@ class Browser():
 
         options = webdriver.ChromeOptions()
         options.headless = True
+        options.add_argument('--headless')
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
         options.add_argument("--disable-blink-features=AutomationControlled")
@@ -80,7 +83,8 @@ class Browser():
         options.add_argument('--proxy-server='+proxy)
         
         
-        self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+        # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+        self.driver = uc.Chrome(options=options)
 
         # self.driver = webdriver.Chrome(options=options)
 
