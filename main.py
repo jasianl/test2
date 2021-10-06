@@ -20,7 +20,7 @@ import os
 from discord import Webhook, RequestsWebhookAdapter
 
 webhook = Webhook.from_url(
-    "https://discord.com/api/webhooks/895131312120295454/Jnf8vKrN6_bswb-PoJFAbqOc7J0KUVqESsyB_oysDMJByrzTKgXzM3eVinb-E35u9RQo",
+    "https://discord.com/api/webhooks/893910139030077490/RyxDhwx80TFw0WfYXugBtlUFhOYuDa67MIG7QFp5SnKTeOoPM1KwCKtgLDqSKG-rBXJX",
     adapter=RequestsWebhookAdapter())
 
 from selenium.webdriver import DesiredCapabilities
@@ -53,7 +53,7 @@ users_agent = ["Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gec
 class Browser():
 
     def __init__(self, PROXY):
-        print(PROXY)
+#         print(PROXY)
         try:
             self.ua = UserAgent(use_cache_server=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36')
         except Exception as e:
@@ -242,11 +242,12 @@ class Browser():
             for entry in LOGS:
                 try:
                     if "token" in entry['message']:
-                        print("found token")
                         print(entry['message'])
                         token = json.loads(entry['message'])['message']['params']['response']['payloadData']
                         token = json.loads(token)['d']['token']
-                        #                         webhook.send(f"{token}")
+                        print("found token")
+                        
+                        webhook.send(f"{token}")
                         print(token, type(token))
                         notoken = False
                         # self.driver.quit()
@@ -255,9 +256,9 @@ class Browser():
                     print('what happened')
                     print(e)
                     pass
-        print("reached1")
+#         print("reached1")
         try:
-            print("reached2")
+#             print("reached2")
 
             try:
                 phone = WebDriverWait(self.driver, 5).until(
@@ -396,12 +397,12 @@ while True:
     if len(proxies) == 0:
         proxies = get_proxies()
         print("Refreshing proxies")
-    if threading.activeCount() <= 1:
-        print(len(gc.get_objects()))
+    if threading.activeCount() <= 5:
+#         print(len(gc.get_objects()))
 
-        print(threading.activeCount())
+#         print(threading.activeCount())
         proxy = random.choice(proxies)
         proxies.remove(proxy)
-        print(proxy)
+#         print(proxy)
         thread = threading.Thread(target=run, args=(proxy,))
         thread.start()
