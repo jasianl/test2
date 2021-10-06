@@ -59,8 +59,8 @@ class Browser():
         except Exception as e:
             print(f"SOME USERAGENT BS: {e}")
 
-        try:
             options = webdriver.ChromeOptions()
+        try:
             options.headless = True
             options.add_argument('--headless')
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -85,10 +85,10 @@ class Browser():
 
 
             # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
-            self.driver = uc.Chrome(options=options)
         except Exception as e:
             print(e)
-
+        self.driver = uc.Chrome(options=options)
+        
         # self.driver = webdriver.Chrome(options=options)
 
     def _quit(self):
