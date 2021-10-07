@@ -63,6 +63,7 @@ class Browser():
             options = webdriver.ChromeOptions()
         try:
             options.headless = True
+            options.addArguments("start-maximized")
             options.add_argument('--headless')
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
