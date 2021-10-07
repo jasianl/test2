@@ -173,7 +173,7 @@ class Browser():
                 try:
                     if "limited" in entry['message']:
                         # print("fuked up")
-                        self.driver.quit()
+                        self._quit()
                         print("Rate Limited")
                         return
                 except:
@@ -248,7 +248,7 @@ class Browser():
             for entry in LOGS:
                 try:
                     if "token" in entry['message']:
-                        print(entry['message'])
+#                         print(entry['message'])
                         token = json.loads(entry['message'])['message']['params']['response']['payloadData']
                         token = json.loads(token)['d']['token']
                         print(f"Found token: [{token}]")
@@ -327,7 +327,7 @@ class Browser():
             print(f"Email created for token -> {token}")
             time.sleep(1)
 
-            self.driver.quit()
+            self._quit()
             return
 
 
