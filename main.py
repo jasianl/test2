@@ -332,61 +332,38 @@ class Browser():
 
 
 def get_proxies():
-    r = requests.get(
-        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=3000&country=US&ssl=all&anonymity=all")
+    r = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=3000&country=all&ssl=all&anonymity=all")
     proxies = r.content.decode().split("\r\n")
     return proxies
 
 
 def checkProxy(proxy):
     try:
-        print(proxy)
-        r = requests.get('https://discord.gg/eS4qmCVM', proxies={'http': f'http://{proxy}', 'https': f'http://{proxy}'},
-                         timeout=2)
+        r = requests.get(invite, proxies={'http': f'http://{proxy}', 'https': f'http://{proxy}'}, timeout=4)
         if r.status_code == 200:
-            print(r.text)
+#             print(r.text)
             return proxy
     except Exception as e:
-        print(e)
+#         print(e)
         pass
 
     return None
 
-
-# if __name__ == "__main__":
-#     # accounts = get_accounts()
-#     proxies = get_proxies()
-#
-#     try:
-#         while True:
-#             proxy = random.choice(proxies)
-#             while checkProxy(proxy) == None:
-#                 proxy = random.choice(proxies)
-#
-#             browser = Browser(proxy)
-#             browser.invite("https://discord.gg/eS4qmCVM")
-#             time.sleep(1)
-#             browser._quit()
-#             time.sleep(5)
-#     except Exception as e:
-#         print("Error while trying to create account")
-#         print(e)
-#         print(traceback.format_exc())
-
 def run(proxy):
-    # print("100")
     try:
         if checkProxy(proxy) != None:
             browser = Browser(proxy)
             browser.invite(invite)
-            time.sleep(1)
-            browser._quit()
+#             time.sleep(1)
+            if browser:
+                browser._quit()
             time.sleep(5)
     except Exception as e:
         print("Error while trying to create account")
         print(e)
         print(traceback.format_exc())
         pass
+    return
 
 
 proxies = get_proxies()
@@ -397,12 +374,10 @@ while True:
     if len(proxies) == 0:
         proxies = get_proxies()
         print("Refreshing proxies")
-    if threading.activeCount() <= 1:
+    if threading.activeCount() <= 2:
 #         print(len(gc.get_objects()))
-
 #         print(threading.activeCount())
         proxy = random.choice(proxies)
         proxies.remove(proxy)
-#         print(proxy)
         thread = threading.Thread(target=run, args=(proxy,))
         thread.start()
