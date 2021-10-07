@@ -53,11 +53,12 @@ users_agent = ["Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gec
 class Browser():
 
     def __init__(self, PROXY):
-#         print(PROXY)
+        print("Intializing a browser...")
+        PROXY = PROXY.strip("\r\n")
         try:
             self.ua = UserAgent(use_cache_server=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36')
         except Exception as e:
-            print(f"SOME USERAGENT BS: {e}")
+            print(f"USERAGENT FAILED TO GET FAKE AGENTS") # Error with library fake_useragents (does not work well with heroku)
 
             options = webdriver.ChromeOptions()
         try:
@@ -66,33 +67,32 @@ class Browser():
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
             options.add_argument("--disable-blink-features=AutomationControlled")
-            #options.add_argument('--proxy-server=%s' % PROXY)
+            options.add_argument('--proxy-server=%s' % PROXY)
             try:
                 options.add_argument(f"--user-agent={self.ua.random}")
                 print("random ua used")
             except:
-                options.add_argument(f"--user-agent={random.choice(users_agent)}")
-                print(f"taking random ua {random.choice(users_agent)}")
+                random_ua = random.choice(users_agent)
+                options.add_argument(f"--user-agent={random_ua}")
+                print(f"UA used: {random_ua}")
             options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
             options.add_argument("--headless")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
 
-            #options.add_argument('--headless')
 #             options.add_argument('--disable-gpu')
 #             options.add_argument('--remote-debugging-port=9222')
-            options.add_argument('--proxy-server='+proxy)
-
-
-            # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+#             options.add_argument('--proxy-server='+PROXY)
+#             self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
         except Exception as e:
-            print(e)
+            print(f"Failed to initialize browser: {e}")
+            
         self.driver = uc.Chrome(options=options)
         
         # self.driver = webdriver.Chrome(options=options)
 
     def _quit(self):
-        print("closing")
+        print("Closing browser...")
         self.driver.quit()
         return
 
@@ -103,7 +103,7 @@ class Browser():
         try:
             self.driver.get(invitelink)
         except Exception as e:
-            print(e)
+            print(f"Failed to open url: {e}")
             self._quit()
             return
         pass
@@ -133,6 +133,7 @@ class Browser():
                 )
                 user = str(random.choice(first).strip("\n") + " " + random.choice(last).strip("\n"))
                 username.send_keys(user)
+                print("Page loaded")
             except:
                 print("Page did not load")
                 self._quit()
@@ -143,7 +144,7 @@ class Browser():
                     '//*[@id="app-mount"]/div[2]/div/div/div/div/form/div/div[2]/div[2]/label/input')
                 checkbox.click()
             except:
-                print("no checkbox")
+#                 print("No checkbox")
                 pass
 
             time.sleep(random.uniform(1.4, 3.7))
@@ -152,6 +153,7 @@ class Browser():
                 submit = self.driver.find_element_by_xpath(
                     '//*[@id="app-mount"]/div[2]/div/div/div/div/form/div/div[2]/div[2]/button')
                 submit.submit()
+                print("Submitted")
             except:
                 pass
 
@@ -159,6 +161,7 @@ class Browser():
                 submit = self.driver.find_element_by_xpath(
                     '//*[@id="app-mount"]/div[2]/div/div/div/div/form/div/div[2]/div[3]/button')
                 submit.submit()
+                print("Submitted")
             except:
                 pass
 
@@ -170,6 +173,7 @@ class Browser():
                     if "limited" in entry['message']:
                         # print("fuked up")
                         self.driver.quit()
+                        print("Rate Limited")
                         return
                 except:
                     pass
@@ -179,18 +183,18 @@ class Browser():
             captcha_iframe = '[data-hcaptcha-response]'
 
             # REFRESH THE PAGE IF NOT LOADED IN 3 TRIES THEN GIVE IT 3 MORE TRIES
-
+            # These tries represent the number of times the while loop checked for a checkbox
             tries = 4
             nocaptcha = True
             while tries > 0 and nocaptcha:
-                print(tries)
                 tries -= 1
+                print(f"Finding hcaptcha; Attempt #{4-tries}")
 
                 time.sleep(random.uniform(2.3, 6.3))
-                print("Trying to find captcha")
+#                 print("Trying to find captcha...")
                 try:
                     self.driver.switch_to.frame(self.driver.find_element_by_css_selector(captcha_iframe))
-                    print("captcha found")
+                    print("Captcha found")
                     nocaptcha = False
                     captcha_not_complete = False
                 except Exception as e:
@@ -211,17 +215,18 @@ class Browser():
                     time.sleep(random.uniform(1.3, 2.2))
                     nocaptcha = False
                     captcha_not_complete = False
-                    print("solved i think")
+                    print("Clicked captcha")
                 except:
+                    print("Captcha not found/couldn't be clicked")
                     pass
 
                 try:
                     # IF CAPTCHA IS NOT SOLVABLE, QUIT
-                    print("checking solvability")
+                    print("Checking solvability")
                     time.sleep(random.uniform(0.6, 1.2))
                     notdoable = self.driver.find_element_by_xpath('/html/body/div[5]/div[1]')  # /html/body/div[5]
                 except:
-                    print("solvable")
+                    print("Solvable")
                     pass
 
             if captcha_not_complete:
@@ -232,7 +237,7 @@ class Browser():
             self._quit()
             return
 
-        print("checking for token")
+        print("Checking for token")
         count = 3000
         notoken = True
         while notoken and count > 0:
@@ -245,21 +250,18 @@ class Browser():
                         print(entry['message'])
                         token = json.loads(entry['message'])['message']['params']['response']['payloadData']
                         token = json.loads(token)['d']['token']
-                        print("found token")
+                        print(f"Found token: [{token}]")
                         
                         webhook.send(f"{token}")
-                        print(token, type(token))
+#                         print(token, type(token))
                         notoken = False
                         # self.driver.quit()
                 except Exception as e:
                     notoken = False
-                    print('what happened')
-                    print(e)
+                    print(f"Error while trying to find token: {e}")
                     pass
-#         print("reached1")
+                
         try:
-#             print("reached2")
-
             try:
                 phone = WebDriverWait(self.driver, 5).until(
                     EC.presence_of_element_located((By.XPATH, '//*[@id="app-mount"]/div[6]/div/div/div[1]/div[4]/div'))
@@ -320,7 +322,8 @@ class Browser():
             submit2 = self.driver.find_element_by_xpath(
                 '//*[@id="app-mount"]/div[5]/div[2]/div/div/div/div[2]/form/button')
             submit2.click()
-
+               
+            print(f"Email created for token -> {token}")
             time.sleep(1)
 
             self.driver.quit()
@@ -374,7 +377,7 @@ while True:
     if len(proxies) == 0:
         proxies = get_proxies()
         print("Refreshing proxies")
-    if threading.activeCount() <= 2:
+    if threading.activeCount() <= 1:
 #         print(len(gc.get_objects()))
 #         print(threading.activeCount())
         proxy = random.choice(proxies)
