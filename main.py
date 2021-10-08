@@ -68,7 +68,7 @@ class Browser():
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
             options.add_argument("--disable-blink-features=AutomationControlled")
-            options.add_argument('--proxy-server=%s' % PROXY)
+#             options.add_argument('--proxy-server=%s' % PROXY)
             try:
                 options.add_argument(f"--user-agent={self.ua.random}")
                 print("random ua used")
@@ -83,7 +83,7 @@ class Browser():
 
 #             options.add_argument('--disable-gpu')
 #             options.add_argument('--remote-debugging-port=9222')
-#             options.add_argument('--proxy-server='+PROXY)
+            options.add_argument('--proxy-server='+PROXY)
 #             self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
         except Exception as e:
             print(f"Failed to initialize browser: {e}")
