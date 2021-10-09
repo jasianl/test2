@@ -81,8 +81,8 @@ class Browser():
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
 
-#             options.add_argument('--disable-gpu')
-#             options.add_argument('--remote-debugging-port=9222')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--remote-debugging-port=9222')
             options.add_argument('--proxy-server='+PROXY)
 #             self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
         except Exception as e:
@@ -380,7 +380,7 @@ while True:
     if len(proxies) == 0:
         proxies = get_proxies()
         print("Refreshing proxies")
-    if threading.activeCount() <= 5:
+    if threading.activeCount() <= 1:
 #         print(len(gc.get_objects()))
 #         print(threading.activeCount())
         proxy = random.choice(proxies)
