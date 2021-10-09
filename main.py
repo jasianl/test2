@@ -35,7 +35,7 @@ import threading
 import gc
 
 invite = 'https://discord.gg/XDjNdNdG'  #
-invite = 'https://discord.gg/334xGGKa'
+invite = 'https://discord.gg/Hw3wuCCYkN'
 
 emails = []
 for line in open("emails.txt", "r"):
