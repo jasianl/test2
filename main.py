@@ -336,7 +336,7 @@ class Browser():
 
 
 def get_proxies():
-    r = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=3000&country=all&ssl=all&anonymity=all")
+    r = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=4000&country=all&ssl=all&anonymity=all")
     proxies = r.content.decode().split("\r\n")
     return proxies
 
