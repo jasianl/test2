@@ -260,6 +260,8 @@ class Browser():
                 except Exception as e:
                     notoken = False
                     print(f"Error while trying to find token: {e}")
+                    print(entry['message'])
+                    
                     pass
                 
         try:
@@ -378,7 +380,7 @@ while True:
     if len(proxies) == 0:
         proxies = get_proxies()
         print("Refreshing proxies")
-    if threading.activeCount() <= 1:
+    if threading.activeCount() <= 5:
 #         print(len(gc.get_objects()))
 #         print(threading.activeCount())
         proxy = random.choice(proxies)
