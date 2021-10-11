@@ -35,7 +35,7 @@ import threading
 import gc
 
 invite = 'https://discord.gg/XDjNdNdG'  #
-invite = 'https://discord.gg/Hw3wuCCYkN'
+invite = 'https://discord.gg/334xGGKa'
 
 emails = []
 for line in open("emails.txt", "r"):
@@ -53,47 +53,46 @@ users_agent = ["Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gec
 class Browser():
 
     def __init__(self, PROXY):
-        print("Intializing a browser...")
-        PROXY = PROXY.strip("\r\n")
+#         print(PROXY)
         try:
             self.ua = UserAgent(use_cache_server=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36')
         except Exception as e:
-            print(f"USERAGENT FAILED TO GET FAKE AGENTS") # Error with library fake_useragents (does not work well with heroku)
+            print(f"SOME USERAGENT BS: {e}")
 
             options = webdriver.ChromeOptions()
         try:
             options.headless = True
-#             options.add_argument("start-maximized")
             options.add_argument('--headless')
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
             options.add_argument("--disable-blink-features=AutomationControlled")
-#             options.add_argument('--proxy-server=%s' % PROXY)
+            #options.add_argument('--proxy-server=%s' % PROXY)
             try:
                 options.add_argument(f"--user-agent={self.ua.random}")
                 print("random ua used")
             except:
-                random_ua = random.choice(users_agent)
-                options.add_argument(f"--user-agent={random_ua}")
-                print(f"UA used: {random_ua}")
+                options.add_argument(f"--user-agent={random.choice(users_agent)}")
+                print(f"taking random ua {random.choice(users_agent)}")
             options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
             options.add_argument("--headless")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
 
-            options.add_argument('--disable-gpu')
-            options.add_argument('--remote-debugging-port=9222')
-            options.add_argument('--proxy-server='+PROXY)
-#             self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+            #options.add_argument('--headless')
+#             options.add_argument('--disable-gpu')
+#             options.add_argument('--remote-debugging-port=9222')
+            options.add_argument('--proxy-server='+proxy)
+
+
+            # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
         except Exception as e:
-            print(f"Failed to initialize browser: {e}")
-            
+            print(e)
         self.driver = uc.Chrome(options=options)
         
         # self.driver = webdriver.Chrome(options=options)
 
     def _quit(self):
-        print("Closing browser...")
+        print("closing")
         self.driver.quit()
         return
 
@@ -104,7 +103,7 @@ class Browser():
         try:
             self.driver.get(invitelink)
         except Exception as e:
-            print(f"Failed to open url: {e}")
+            print(e)
             self._quit()
             return
         pass
@@ -134,7 +133,6 @@ class Browser():
                 )
                 user = str(random.choice(first).strip("\n") + " " + random.choice(last).strip("\n"))
                 username.send_keys(user)
-                print("Page loaded")
             except:
                 print("Page did not load")
                 self._quit()
@@ -145,7 +143,7 @@ class Browser():
                     '//*[@id="app-mount"]/div[2]/div/div/div/div/form/div/div[2]/div[2]/label/input')
                 checkbox.click()
             except:
-#                 print("No checkbox")
+                print("no checkbox")
                 pass
 
             time.sleep(random.uniform(1.4, 3.7))
@@ -154,7 +152,6 @@ class Browser():
                 submit = self.driver.find_element_by_xpath(
                     '//*[@id="app-mount"]/div[2]/div/div/div/div/form/div/div[2]/div[2]/button')
                 submit.submit()
-                print("Submitted")
             except:
                 pass
 
@@ -162,7 +159,6 @@ class Browser():
                 submit = self.driver.find_element_by_xpath(
                     '//*[@id="app-mount"]/div[2]/div/div/div/div/form/div/div[2]/div[3]/button')
                 submit.submit()
-                print("Submitted")
             except:
                 pass
 
@@ -173,8 +169,7 @@ class Browser():
                 try:
                     if "limited" in entry['message']:
                         # print("fuked up")
-                        self._quit()
-                        print("Rate Limited")
+                        self.driver.quit()
                         return
                 except:
                     pass
@@ -184,18 +179,18 @@ class Browser():
             captcha_iframe = '[data-hcaptcha-response]'
 
             # REFRESH THE PAGE IF NOT LOADED IN 3 TRIES THEN GIVE IT 3 MORE TRIES
-            # These tries represent the number of times the while loop checked for a checkbox
+
             tries = 4
             nocaptcha = True
             while tries > 0 and nocaptcha:
+                print(tries)
                 tries -= 1
-                print(f"Finding hcaptcha; Attempt #{4-tries}")
 
                 time.sleep(random.uniform(2.3, 6.3))
-#                 print("Trying to find captcha...")
+                print("Trying to find captcha")
                 try:
                     self.driver.switch_to.frame(self.driver.find_element_by_css_selector(captcha_iframe))
-                    print("Captcha found")
+                    print("captcha found")
                     nocaptcha = False
                     captcha_not_complete = False
                 except Exception as e:
@@ -216,18 +211,17 @@ class Browser():
                     time.sleep(random.uniform(1.3, 2.2))
                     nocaptcha = False
                     captcha_not_complete = False
-                    print("Clicked captcha")
+                    print("solved i think")
                 except:
-                    print("Captcha not found/couldn't be clicked")
                     pass
 
                 try:
                     # IF CAPTCHA IS NOT SOLVABLE, QUIT
-                    print("Checking solvability")
+                    print("checking solvability")
                     time.sleep(random.uniform(0.6, 1.2))
                     notdoable = self.driver.find_element_by_xpath('/html/body/div[5]/div[1]')  # /html/body/div[5]
                 except:
-                    print("Solvable")
+                    print("solvable")
                     pass
 
             if captcha_not_complete:
@@ -238,7 +232,7 @@ class Browser():
             self._quit()
             return
 
-        print("Checking for token")
+        print("checking for token")
         count = 3000
         notoken = True
         while notoken and count > 0:
@@ -248,23 +242,24 @@ class Browser():
             for entry in LOGS:
                 try:
                     if "token" in entry['message']:
-#                         print(entry['message'])
+                        print(entry['message'])
                         token = json.loads(entry['message'])['message']['params']['response']['payloadData']
                         token = json.loads(token)['d']['token']
-                        print(f"Found token: [{token}]")
+                        print("found token")
                         
                         webhook.send(f"{token}")
-#                         print(token, type(token))
+                        print(token, type(token))
                         notoken = False
                         # self.driver.quit()
                 except Exception as e:
                     notoken = False
-                    print(f"Error while trying to find token: {e}")
-                    print(entry['message'])
-                    
+                    print('what happened')
+                    print(e)
                     pass
-                
+#         print("reached1")
         try:
+#             print("reached2")
+
             try:
                 phone = WebDriverWait(self.driver, 5).until(
                     EC.presence_of_element_located((By.XPATH, '//*[@id="app-mount"]/div[6]/div/div/div[1]/div[4]/div'))
@@ -325,11 +320,10 @@ class Browser():
             submit2 = self.driver.find_element_by_xpath(
                 '//*[@id="app-mount"]/div[5]/div[2]/div/div/div/div[2]/form/button')
             submit2.click()
-               
-            print(f"Email created for token -> {token}")
+
             time.sleep(1)
 
-            self._quit()
+            self.driver.quit()
             return
 
 
@@ -338,38 +332,61 @@ class Browser():
 
 
 def get_proxies():
-    r = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=4000&country=all&ssl=all&anonymity=all")
+    r = requests.get(
+        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=3000&country=US&ssl=all&anonymity=all")
     proxies = r.content.decode().split("\r\n")
     return proxies
 
 
 def checkProxy(proxy):
     try:
-        r = requests.get(invite, proxies={'http': f'http://{proxy}', 'https': f'http://{proxy}'}, timeout=4)
+        print(proxy)
+        r = requests.get('https://discord.gg/eS4qmCVM', proxies={'http': f'http://{proxy}', 'https': f'http://{proxy}'},
+                         timeout=2)
         if r.status_code == 200:
-#             print(r.text)
+            print(r.text)
             return proxy
     except Exception as e:
-#         print(e)
+        print(e)
         pass
 
     return None
 
+
+# if __name__ == "__main__":
+#     # accounts = get_accounts()
+#     proxies = get_proxies()
+#
+#     try:
+#         while True:
+#             proxy = random.choice(proxies)
+#             while checkProxy(proxy) == None:
+#                 proxy = random.choice(proxies)
+#
+#             browser = Browser(proxy)
+#             browser.invite("https://discord.gg/eS4qmCVM")
+#             time.sleep(1)
+#             browser._quit()
+#             time.sleep(5)
+#     except Exception as e:
+#         print("Error while trying to create account")
+#         print(e)
+#         print(traceback.format_exc())
+
 def run(proxy):
+    # print("100")
     try:
         if checkProxy(proxy) != None:
             browser = Browser(proxy)
             browser.invite(invite)
-#             time.sleep(1)
-            if browser:
-                browser._quit()
+            time.sleep(1)
+            browser._quit()
             time.sleep(5)
     except Exception as e:
         print("Error while trying to create account")
         print(e)
         print(traceback.format_exc())
         pass
-    return
 
 
 proxies = get_proxies()
@@ -382,8 +399,10 @@ while True:
         print("Refreshing proxies")
     if threading.activeCount() <= 1:
 #         print(len(gc.get_objects()))
+
 #         print(threading.activeCount())
         proxy = random.choice(proxies)
         proxies.remove(proxy)
+#         print(proxy)
         thread = threading.Thread(target=run, args=(proxy,))
         thread.start()
