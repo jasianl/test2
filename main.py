@@ -342,7 +342,7 @@ while True:
     if len(proxies) == 0:
         print("Refreshing proxies")
         proxies = get_proxies()
-    if threading.activeCount() <= 5:
+    if threading.activeCount() <= 1:
         # print(len(gc.get_objects()))
         # print(threading.activeCount())
         proxy = random.choice(proxies)
